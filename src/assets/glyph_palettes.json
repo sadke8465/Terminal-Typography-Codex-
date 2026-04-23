@@ -1,0 +1,18 @@
+{
+  "solid_block": {
+    "name": "Solid Block",
+    "glyphs": ["░", "▒", "▓", "█"]
+  },
+  "cyber_matrix": {
+    "name": "Cyber / Matrix",
+    "glyphs": ["ｦ", "ｧ", "ｨ", "ｩ", "ｪ", "ｫ", "ｬ", "1", "0", "ﾊ", "ﾐ", "ﾋ", "ｰ"]
+  },
+  "architectural": {
+    "name": "Architectural",
+    "glyphs": ["╔", "╚", "╝", "╗", "║", "═", "╬"]
+  },
+  "braille": {
+    "name": "Braille",
+    "glyphs": ["⡆", "⡇", "⡈", "⡉", "⡊", "⡋"]
+  }
+}
