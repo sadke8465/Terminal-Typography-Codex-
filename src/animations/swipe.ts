@@ -1,4 +1,4 @@
-import { clamp, radialDistance } from "../core/math_utils";
+import { clamp, radialDistance, smoothstep } from "../core/math_utils";
 
 export type SwipeDirection = "left_to_right" | "right_to_left" | "top_to_bottom" | "bottom_to_top" | "radial";
 export type SwipeAction = "reveal" | "conceal";
@@ -8,6 +8,7 @@ export type SwipeParams = {
   action: SwipeAction;
   speed: number;
   edgeDecay: boolean;
+  edgeDecayDistance?: number;
 };
 
 export function computeSwipeDensity(
@@ -48,8 +49,10 @@ export function computeSwipeDensity(
     return visible ? 1 : 0;
   }
 
-  const decayLength = 3;
-  const edgeMix = clamp(1 - Math.abs(boundaryDistance) / decayLength, 0, 1);
+  const decayLength = Math.max(0.25, params.edgeDecayDistance ?? 3);
+  const mix = 1 - smoothstep(0, decayLength, Math.abs(boundaryDistance));
+  const edgeMix = clamp(mix, 0, 1);
+
   if (params.action === "reveal") {
     return visible ? 1 : edgeMix;
   }
