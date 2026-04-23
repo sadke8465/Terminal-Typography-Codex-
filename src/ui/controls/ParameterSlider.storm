@@ -1,0 +1,14 @@
+<component name="ParameterSlider">
+  <props>
+    <prop name="label" type="string" />
+    <prop name="value" type="number" />
+    <prop name="min" type="number" />
+    <prop name="max" type="number" />
+    <prop name="step" type="number" />
+  </props>
+
+  <view class="slider-row">
+    <Text>{{ label }}</Text>
+    <Slider value="{{ value }}" min="{{ min }}" max="{{ max }}" step="{{ step }}" />
+  </view>
+</component>

@@ -1,0 +1,14 @@
+<module>
+  <import path="./ui/canvas/Stage.storm" as="Stage" />
+  <import path="./ui/controls/ControlPanel.storm" as="ControlPanel" />
+
+  <layout direction="column" split="50:50" height="100%">
+    <section id="top-canvas">
+      <Stage rows="{{ frameRows }}" />
+    </section>
+
+    <section id="bottom-controls">
+      <ControlPanel preset="{{ state.preset }}" glyphSet="{{ state.glyphSet }}" />
+    </section>
+  </layout>
+</module>

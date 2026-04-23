@@ -1,0 +1,14 @@
+<component name="ControlPanel">
+  <props>
+    <prop name="preset" type="string" />
+    <prop name="glyphSet" type="string" />
+  </props>
+
+  <view class="liquid-panel fixed-height">
+    <PresetSelector value="{{ preset }}" />
+    <GlyphSelector value="{{ glyphSet }}" />
+    <Transition mode="crossfade" durationMs="180">
+      <Slot name="parameter-sliders" />
+    </Transition>
+  </view>
+</component>
