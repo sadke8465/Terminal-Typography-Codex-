@@ -62,15 +62,12 @@ src/
 
 ## Installation
 
-> This repository currently does **not** include a package manifest (`package.json`) or lockfile, so there is no one-command dependency install yet.
-
 ### Prerequisites
 
 Install the following on your machine:
 
 1. **Node.js 20+** (recommended).
-2. **TypeScript toolchain** (`typescript`, `ts-node` or your preferred runner).
-3. **Storm framework CLI/runtime** compatible with `.storm` modules.
+2. **npm 10+**.
 
 ### 1) Clone the repository
 
@@ -79,26 +76,31 @@ git clone <your-repo-url>
 cd Terminal-Typography-Codex-
 ```
 
-### 2) Initialize a Node workspace (if starting from this repo state)
+### 2) Install Node/TypeScript dependencies
 
 ```bash
-npm init -y
-npm install -D typescript ts-node @types/node
+npm install
 ```
 
-### 3) Create a TypeScript config (if missing)
+### 3) Install Storm runtime dependencies
+
+A formal automation script is included to install Storm runtime packages from npm:
 
 ```bash
-npx tsc --init
+npm run install:storm
 ```
 
-### 4) Install/configure Storm tooling
+By default, this script installs `@storm/runtime` and `@storm/cli`. You can override with your own package set if your environment uses different Storm package names:
 
-Use your environment's Storm setup instructions to install the CLI/runtime and point it at `src/main.storm` as the application entry.
+```bash
+STORM_RUNTIME_DEPS='your-runtime-pkg your-cli-pkg' npm run install:storm
+```
 
-### 5) Run in development
+### 4) Run in development
 
-Because runtime scripts are not yet committed in this repo snapshot, run using your local Storm/TypeScript workflow (for example, Storm dev server + TS transpile/watch).
+```bash
+npm run dev
+```
 
 ## Programmatic usage
 
@@ -129,6 +131,4 @@ From `src/app.ts`, you can use the core public helpers:
 
 ## Roadmap suggestions
 
-- Add `package.json` scripts (`dev`, `build`, `typecheck`, `test`).
-- Add formal installation automation for Storm runtime dependencies.
 - Add sample CLI renderer integration (Go/Rust reference adapter).
