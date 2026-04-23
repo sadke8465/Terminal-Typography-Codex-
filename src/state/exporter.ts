@@ -1,4 +1,5 @@
 import type { AnimatorState } from "./store";
+import { sanitizePresetParams } from "./schema";
 
 export type AnimationJson = {
   version: string;
@@ -10,13 +11,14 @@ export type AnimationJson = {
 };
 
 export function toAnimationJson(state: AnimatorState): AnimationJson {
+  const parameters = sanitizePresetParams(state.preset, state.parameters) as Record<string, string | number | boolean>;
   return {
     version: state.version,
     text: state.text,
     font: state.font,
     glyphSet: state.glyphSet,
     preset: state.preset,
-    parameters: state.parameters as Record<string, string | number | boolean>,
+    parameters,
   };
 }
 
