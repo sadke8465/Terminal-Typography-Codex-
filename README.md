@@ -28,6 +28,7 @@ src/
     └── controls/
         ├── ControlPanel.storm
         ├── PresetSelector.storm
+        ├── FontSelector.storm
         ├── GlyphSelector.storm
         └── ParameterSlider.storm
 ```
@@ -38,6 +39,7 @@ src/
 - **Texture pipeline:** `glyph_palettes.json` maps density levels to terminal glyphs.
 - **Animation modules:** independent math modules for `sheen`, `wave`, and `swipe`.
 - **Engine loop:** `engine.ts` uses front/back typed-array buffers and a 60fps-capable tick model.
+- **Boundary metadata:** `grid_mapper.ts` tracks shape bounds and character ownership for sturdier effects.
 - **Export handoff:** `state/exporter.ts` emits a lightweight `animation.json` for Go/Rust runtimes.
 
 ## Example exported JSON

@@ -8,7 +8,7 @@
     </section>
 
     <section id="bottom-controls">
-      <ControlPanel preset="{{ state.preset }}" glyphSet="{{ state.glyphSet }}" />
+      <ControlPanel text="{{ state.text }}" font="{{ state.font }}" preset="{{ state.preset }}" glyphSet="{{ state.glyphSet }}" />
     </section>
   </layout>
 </module>

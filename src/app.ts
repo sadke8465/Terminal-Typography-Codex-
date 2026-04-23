@@ -21,7 +21,11 @@ function resolveFont(fontId: string): FontDefinition {
 }
 
 function resolvePalette(glyphSetId: string): { glyphs: string[] } {
-  return paletteMap[glyphSetId] ?? fallbackPalette;
+  const resolved = paletteMap[glyphSetId] ?? fallbackPalette;
+  if (!resolved || !Array.isArray(resolved.glyphs) || resolved.glyphs.length === 0) {
+    return { glyphs: [" "] };
+  }
+  return resolved;
 }
 
 function buildEngine() {

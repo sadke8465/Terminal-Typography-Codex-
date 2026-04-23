@@ -95,6 +95,17 @@ function normalizeAssetId(value: unknown, fallback: string): string {
   return trimmed || fallback;
 }
 
+function normalizeHexColor(value: unknown): string | undefined {
+  if (typeof value !== "string") {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(trimmed) ? trimmed : undefined;
+}
+
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -117,7 +128,7 @@ export function sanitizePresetParams(preset: Preset, input: unknown): SheenParam
       speed: clamp(toFiniteNumber(params.speed, DEFAULT_SHEEN.speed), 0.05, 20),
       thickness: clamp(toFiniteNumber(params.thickness, DEFAULT_SHEEN.thickness), 0.5, 50),
       glyphOverride: typeof params.glyphOverride === "boolean" ? params.glyphOverride : DEFAULT_SHEEN.glyphOverride,
-      highlightColor: typeof params.highlightColor === "string" ? params.highlightColor : undefined,
+      highlightColor: normalizeHexColor(params.highlightColor),
     };
   }
 
