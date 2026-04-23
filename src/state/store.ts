@@ -1,35 +1,9 @@
-import type { Preset } from "../core/engine";
-import type { SheenParams } from "../animations/sheen";
-import type { SwipeParams } from "../animations/swipe";
-import type { WaveParams } from "../animations/wave";
-
-export type AnimatorState = {
-  version: string;
-  text: string;
-  font: string;
-  glyphSet: string;
-  preset: Preset;
-  parameters: SheenParams | WaveParams | SwipeParams;
-};
+import { DEFAULT_STATE, normalizeState, type AnimatorState } from "./schema";
 
 type Listener = (state: AnimatorState) => void;
 
-const defaultState: AnimatorState = {
-  version: "1.0.0",
-  text: "STORM",
-  font: "cybermedium",
-  glyphSet: "solid_block",
-  preset: "swipe",
-  parameters: {
-    direction: "left_to_right",
-    action: "reveal",
-    edgeDecay: true,
-    speed: 2.5,
-  },
-};
-
 export class Store {
-  private state: AnimatorState = defaultState;
+  private state: AnimatorState = DEFAULT_STATE;
   private listeners: Set<Listener> = new Set();
 
   getState(): AnimatorState {
@@ -37,7 +11,7 @@ export class Store {
   }
 
   setState(next: Partial<AnimatorState>): void {
-    this.state = { ...this.state, ...next };
+    this.state = normalizeState(next, this.state);
     this.listeners.forEach((listener) => listener(this.state));
   }
 

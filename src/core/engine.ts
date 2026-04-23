@@ -39,7 +39,7 @@ export class AnimationEngine {
   }
 
   start(listener: FrameListener): void {
-    const fps = this.config.fps ?? 60;
+    const fps = Math.max(1, Math.round(this.config.fps ?? 60));
     const interval = Math.round(1000 / fps);
     this.stop();
     this.timer = setInterval(() => {
@@ -115,6 +115,9 @@ export class AnimationEngine {
 
   private pickGlyph(density: number): string {
     if (density <= 0) {
+      return " ";
+    }
+    if (this.config.palette.glyphs.length === 0) {
       return " ";
     }
     const index = Math.min(
