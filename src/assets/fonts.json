@@ -1,0 +1,12 @@
+{
+  "cybermedium": {
+    "height": 7,
+    "width": 5,
+    "spacing": 1
+  },
+  "architect": {
+    "height": 8,
+    "width": 6,
+    "spacing": 1
+  }
+}

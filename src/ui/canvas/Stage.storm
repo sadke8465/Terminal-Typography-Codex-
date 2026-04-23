@@ -1,0 +1,3 @@
+<Stage>
+  <Canvas bind:buffer="frontBuffer" fps="60" />
+</Stage>

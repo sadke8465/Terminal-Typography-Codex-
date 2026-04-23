@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "text": "STORM",
+  "font": "cybermedium",
+  "glyphSet": "solid_block",
+  "preset": "swipe",
+  "parameters": {
+    "direction": "left_to_right",
+    "action": "reveal",
+    "edgeDecay": true,
+    "speed": 2.5
+  }
+}

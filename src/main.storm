@@ -1,0 +1,4 @@
+<AppShell>
+  <Stage id="preview-canvas" />
+  <ControlPanel id="liquid-controls" />
+</AppShell>

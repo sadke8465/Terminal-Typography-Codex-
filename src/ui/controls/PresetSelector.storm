@@ -1,0 +1,5 @@
+<PresetSelector>
+  <Toggle value="sheen" />
+  <Toggle value="wave" />
+  <Toggle value="swipe" />
+</PresetSelector>

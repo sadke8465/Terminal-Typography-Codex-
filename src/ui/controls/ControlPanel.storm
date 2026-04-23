@@ -1,0 +1,5 @@
+<ControlPanel>
+  <PresetSelector />
+  <GlyphSelector />
+  <ParameterSlider />
+</ControlPanel>
