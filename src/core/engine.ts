@@ -28,6 +28,7 @@ export class AnimationEngine {
   private readonly back: Float32Array;
   private readonly baseShape: Float32Array;
   private frame = 0;
+  private elapsedSeconds = 0;
   private timer: ReturnType<typeof setInterval> | undefined;
 
   constructor(private readonly shape: ShapeGrid, private config: EngineConfig) {
@@ -65,6 +66,10 @@ export class AnimationEngine {
   }
 
   private tick(): void {
+    const fps = Math.max(1, this.config.fps ?? 60);
+    const dt = 1 / fps;
+    this.elapsedSeconds += dt;
+
     for (let i = 0; i < this.baseShape.length; i += 1) {
       this.back[i] = this.baseShape[i];
     }
@@ -78,7 +83,11 @@ export class AnimationEngine {
 
         if (this.config.preset === "sheen" && this.config.sheen) {
           const intensity = computeSheenIntensity(x, y, this.frame, this.width, this.height, this.config.sheen);
-          this.back[idx] = Math.max(this.back[idx], intensity);
+          if (this.config.sheen.glyphOverride) {
+            this.back[idx] = Math.max(this.back[idx], intensity > 0 ? 1 : this.back[idx]);
+          } else {
+            this.back[idx] = Math.max(this.back[idx], intensity);
+          }
         }
 
         if (this.config.preset === "swipe" && this.config.swipe) {
@@ -86,7 +95,8 @@ export class AnimationEngine {
         }
 
         if (this.config.preset === "wave" && this.config.wave) {
-          const offset = Math.round(computeWaveOffset(x, this.frame / (this.config.fps ?? 60), this.config.wave));
+          const ownerIndex = this.shape.columnOwners[x] >= 0 ? this.shape.columnOwners[x] : x;
+          const offset = Math.round(computeWaveOffset(ownerIndex, this.elapsedSeconds, this.config.wave));
           const targetY = y + offset;
           if (targetY >= 0 && targetY < this.height) {
             this.back[targetY * this.width + x] = Math.max(this.back[targetY * this.width + x], this.baseShape[idx]);
@@ -120,10 +130,8 @@ export class AnimationEngine {
     if (this.config.palette.glyphs.length === 0) {
       return " ";
     }
-    const index = Math.min(
-      this.config.palette.glyphs.length - 1,
-      Math.floor(density * (this.config.palette.glyphs.length - 1))
-    );
+    const normalizedDensity = Math.max(0, Math.min(1, density));
+    const index = Math.min(this.config.palette.glyphs.length - 1, Math.floor(normalizedDensity * (this.config.palette.glyphs.length - 1)));
     return this.config.palette.glyphs[index] ?? " ";
   }
 }

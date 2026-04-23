@@ -1,14 +1,21 @@
 <component name="ControlPanel">
   <props>
+    <prop name="text" type="string" />
+    <prop name="font" type="string" />
     <prop name="preset" type="string" />
     <prop name="glyphSet" type="string" />
   </props>
 
   <view class="liquid-panel fixed-height">
+    <TextInput value="{{ text }}" placeholder="Preview text" maxLength="64" />
+    <FontSelector value="{{ font }}" />
     <PresetSelector value="{{ preset }}" />
     <GlyphSelector value="{{ glyphSet }}" />
     <Transition mode="crossfade" durationMs="180">
       <Slot name="parameter-sliders" />
     </Transition>
+    <Button variant="secondary">
+      Export animation.json
+    </Button>
   </view>
 </component>

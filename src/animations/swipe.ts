@@ -41,16 +41,17 @@ export function computeSwipeDensity(
     }
   }
 
-  const visible = params.action === "reveal" ? boundaryDistance <= 0 : boundaryDistance > 0;
+  const revealVisible = boundaryDistance <= 0;
+  const visible = params.action === "reveal" ? revealVisible : !revealVisible;
 
   if (!params.edgeDecay) {
     return visible ? 1 : 0;
   }
 
   const decayLength = 3;
-  const soft = clamp(1 - Math.abs(boundaryDistance) / decayLength, 0, 1);
+  const edgeMix = clamp(1 - Math.abs(boundaryDistance) / decayLength, 0, 1);
   if (params.action === "reveal") {
-    return visible ? 1 : soft;
+    return visible ? 1 : edgeMix;
   }
-  return visible ? 1 : soft;
+  return visible ? 1 : 1 - edgeMix;
 }
