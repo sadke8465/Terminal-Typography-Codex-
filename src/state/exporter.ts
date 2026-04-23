@@ -1,4 +1,4 @@
-import type { AnimatorState } from "./store";
+import type { AnimatorState } from "./schema";
 import { sanitizePresetParams } from "./schema";
 
 export type AnimationJson = {

@@ -12,6 +12,8 @@ export type AnimatorState = {
   parameters: SheenParams | WaveParams | SwipeParams;
 };
 
+const PRESET_VALUES: Preset[] = ["sheen", "wave", "swipe"];
+
 const DEFAULT_TEXT = "STORM";
 const DEFAULT_VERSION = "1.0.0";
 
@@ -51,6 +53,10 @@ export const DEFAULT_STATE: AnimatorState = {
   parameters: { ...DEFAULT_SWIPE },
 };
 
+function isPreset(value: unknown): value is Preset {
+  return PRESET_VALUES.includes(value as Preset);
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
@@ -60,6 +66,33 @@ function toFiniteNumber(value: unknown, fallback: number): number {
     return fallback;
   }
   return Number.isFinite(value) ? value : fallback;
+}
+
+function normalizeVersion(value: unknown, fallback: string): string {
+  if (typeof value !== "string") {
+    return fallback;
+  }
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return fallback;
+  }
+  return /^\d+\.\d+\.\d+$/.test(trimmed) ? trimmed : fallback;
+}
+
+function normalizeText(value: unknown, fallback: string): string {
+  if (typeof value !== "string") {
+    return fallback;
+  }
+  const normalized = value.replace(/\s+/g, " ").trim().slice(0, 64);
+  return normalized || fallback;
+}
+
+function normalizeAssetId(value: unknown, fallback: string): string {
+  if (typeof value !== "string") {
+    return fallback;
+  }
+  const trimmed = value.trim();
+  return trimmed || fallback;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -106,7 +139,8 @@ export function sanitizePresetParams(preset: Preset, input: unknown): SheenParam
 }
 
 export function normalizeState(next: Partial<AnimatorState>, previous: AnimatorState): AnimatorState {
-  const preset = (next.preset ?? previous.preset) as Preset;
+  const presetCandidate = next.preset ?? previous.preset;
+  const preset = isPreset(presetCandidate) ? presetCandidate : previous.preset;
   const resolvedParameters =
     next.parameters !== undefined
       ? sanitizePresetParams(preset, next.parameters)
@@ -115,10 +149,10 @@ export function normalizeState(next: Partial<AnimatorState>, previous: AnimatorS
         : sanitizePresetParams(preset, previous.parameters);
 
   return {
-    version: (next.version ?? previous.version).trim() || DEFAULT_VERSION,
-    text: (next.text ?? previous.text).trim() || DEFAULT_TEXT,
-    font: (next.font ?? previous.font).trim() || previous.font,
-    glyphSet: (next.glyphSet ?? previous.glyphSet).trim() || previous.glyphSet,
+    version: normalizeVersion(next.version ?? previous.version, DEFAULT_VERSION),
+    text: normalizeText(next.text ?? previous.text, DEFAULT_TEXT),
+    font: normalizeAssetId(next.font ?? previous.font, previous.font),
+    glyphSet: normalizeAssetId(next.glyphSet ?? previous.glyphSet, previous.glyphSet),
     preset,
     parameters: resolvedParameters,
   };

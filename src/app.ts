@@ -15,19 +15,35 @@ const paletteMap = glyphPalettes as Record<string, { glyphs: string[] }>;
 
 const fallbackFont = fontMap[Object.keys(fontMap)[0]];
 const fallbackPalette = paletteMap[Object.keys(paletteMap)[0]];
-const font = fontMap[state.font] ?? fallbackFont;
-const palette = paletteMap[state.glyphSet] ?? fallbackPalette;
 
-const safeParams = sanitizePresetParams(state.preset, state.parameters);
+function resolveFont(fontId: string): FontDefinition {
+  return fontMap[fontId] ?? fallbackFont;
+}
 
-const shape = mapTextToGrid(state.text, font);
+function resolvePalette(glyphSetId: string): { glyphs: string[] } {
+  return paletteMap[glyphSetId] ?? fallbackPalette;
+}
 
-const engine = new AnimationEngine(shape, {
-  preset: state.preset,
-  palette: { id: state.glyphSet, glyphs: palette?.glyphs ?? [" "] },
-  swipe: state.preset === "swipe" ? (safeParams as SwipeParams) : undefined,
-  wave: state.preset === "wave" ? (safeParams as WaveParams) : undefined,
-  sheen: state.preset === "sheen" ? (safeParams as SheenParams) : undefined,
+function buildEngine() {
+  const currentState = animatorStore.getState();
+  const font = resolveFont(currentState.font);
+  const palette = resolvePalette(currentState.glyphSet);
+  const safeParams = sanitizePresetParams(currentState.preset, currentState.parameters);
+  const shape = mapTextToGrid(currentState.text, font);
+  return new AnimationEngine(shape, {
+    preset: currentState.preset,
+    palette: { id: currentState.glyphSet, glyphs: palette?.glyphs ?? [" "] },
+    swipe: currentState.preset === "swipe" ? (safeParams as SwipeParams) : undefined,
+    wave: currentState.preset === "wave" ? (safeParams as WaveParams) : undefined,
+    sheen: currentState.preset === "sheen" ? (safeParams as SheenParams) : undefined,
+  });
+}
+
+let engine = buildEngine();
+
+animatorStore.subscribe(() => {
+  engine.stop();
+  engine = buildEngine();
 });
 
 export function renderSingleFrame(): string[] {
