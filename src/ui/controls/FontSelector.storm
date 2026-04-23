@@ -1,9 +1,0 @@
-<component name="FontSelector">
-  <props>
-    <prop name="value" type="string" />
-  </props>
-
-  <view class="selector-row">
-    <ToggleGroup value="{{ value }}" options="['cybermedium']" />
-  </view>
-</component>

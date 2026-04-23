@@ -1,9 +1,0 @@
-<component name="PresetSelector">
-  <props>
-    <prop name="value" type="string" />
-  </props>
-
-  <view class="selector-row">
-    <ToggleGroup value="{{ value }}" options="['sheen','wave','swipe']" />
-  </view>
-</component>
