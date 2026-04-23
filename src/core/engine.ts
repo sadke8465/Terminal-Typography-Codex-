@@ -21,12 +21,15 @@ export type EngineConfig = {
 
 export type FrameListener = (rows: string[]) => void;
 
+type Rgb = { r: number; g: number; b: number };
+
 export class AnimationEngine {
   private readonly width: number;
   private readonly height: number;
   private readonly front: Float32Array;
   private readonly back: Float32Array;
   private readonly baseShape: Float32Array;
+  private readonly sheenMask: Uint8Array;
   private frame = 0;
   private elapsedSeconds = 0;
   private timer: ReturnType<typeof setInterval> | undefined;
@@ -37,6 +40,7 @@ export class AnimationEngine {
     this.baseShape = new Float32Array(shape.cells);
     this.front = new Float32Array(shape.cells.length);
     this.back = new Float32Array(shape.cells.length);
+    this.sheenMask = new Uint8Array(shape.cells.length);
   }
 
   start(listener: FrameListener): void {
@@ -72,6 +76,7 @@ export class AnimationEngine {
 
     for (let i = 0; i < this.baseShape.length; i += 1) {
       this.back[i] = this.baseShape[i];
+      this.sheenMask[i] = 0;
     }
 
     for (let y = 0; y < this.height; y += 1) {
@@ -83,6 +88,9 @@ export class AnimationEngine {
 
         if (this.config.preset === "sheen" && this.config.sheen) {
           const intensity = computeSheenIntensity(x, y, this.frame, this.width, this.height, this.config.sheen);
+          if (intensity > 0) {
+            this.sheenMask[idx] = 1;
+          }
           if (this.config.sheen.glyphOverride) {
             this.back[idx] = Math.max(this.back[idx], intensity > 0 ? 1 : this.back[idx]);
           } else {
@@ -112,11 +120,19 @@ export class AnimationEngine {
 
   private renderRows(): string[] {
     const output: string[] = [];
+    const sheenColor = this.config.preset === "sheen" ? parseHexColor(this.config.sheen?.highlightColor) : undefined;
+
     for (let y = 0; y < this.height; y += 1) {
       let row = "";
       for (let x = 0; x < this.width; x += 1) {
-        const density = this.front[y * this.width + x];
-        row += this.pickGlyph(density);
+        const idx = y * this.width + x;
+        const density = this.front[idx];
+        const glyph = this.pickGlyph(density);
+        if (!sheenColor || this.sheenMask[idx] === 0 || glyph === " ") {
+          row += glyph;
+          continue;
+        }
+        row += colorizeGlyph(glyph, sheenColor);
       }
       output.push(row);
     }
@@ -134,4 +150,32 @@ export class AnimationEngine {
     const index = Math.min(this.config.palette.glyphs.length - 1, Math.floor(normalizedDensity * (this.config.palette.glyphs.length - 1)));
     return this.config.palette.glyphs[index] ?? " ";
   }
+}
+
+function parseHexColor(hex?: string): Rgb | undefined {
+  if (!hex) {
+    return undefined;
+  }
+  const normalized = hex.trim().replace("#", "");
+  if (!/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(normalized)) {
+    return undefined;
+  }
+
+  if (normalized.length === 3) {
+    return {
+      r: Number.parseInt(normalized[0] + normalized[0], 16),
+      g: Number.parseInt(normalized[1] + normalized[1], 16),
+      b: Number.parseInt(normalized[2] + normalized[2], 16),
+    };
+  }
+
+  return {
+    r: Number.parseInt(normalized.slice(0, 2), 16),
+    g: Number.parseInt(normalized.slice(2, 4), 16),
+    b: Number.parseInt(normalized.slice(4, 6), 16),
+  };
+}
+
+function colorizeGlyph(glyph: string, color: Rgb): string {
+  return `\u001b[38;2;${color.r};${color.g};${color.b}m${glyph}\u001b[0m`;
 }

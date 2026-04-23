@@ -9,15 +9,41 @@ import { exportAnimationJson } from "./state/exporter";
 import { animatorStore } from "./state/store";
 import { sanitizePresetParams } from "./state/schema";
 
-const state = animatorStore.getState();
 const fontMap = fonts as Record<string, FontDefinition>;
 const paletteMap = glyphPalettes as Record<string, { glyphs: string[] }>;
 
-const fallbackFont = fontMap[Object.keys(fontMap)[0]];
-const fallbackPalette = paletteMap[Object.keys(paletteMap)[0]];
+const fallbackFont = pickFallbackFont(fontMap);
+const fallbackPalette = pickFallbackPalette(paletteMap);
+
+function pickFallbackFont(map: Record<string, FontDefinition>): FontDefinition {
+  const [firstId] = Object.keys(map);
+  const first = map[firstId];
+  if (!first) {
+    return {
+      name: "fallback",
+      spacing: 1,
+      fallback: ["111", "101", "111"],
+      glyphs: {},
+    };
+  }
+  return first;
+}
+
+function pickFallbackPalette(map: Record<string, { glyphs: string[] }>): { glyphs: string[] } {
+  const [firstId] = Object.keys(map);
+  const first = map[firstId];
+  if (!first?.glyphs?.length) {
+    return { glyphs: [" "] };
+  }
+  return first;
+}
 
 function resolveFont(fontId: string): FontDefinition {
-  return fontMap[fontId] ?? fallbackFont;
+  const candidate = fontMap[fontId] ?? fallbackFont;
+  if (!candidate.fallback?.length) {
+    return fallbackFont;
+  }
+  return candidate;
 }
 
 function resolvePalette(glyphSetId: string): { glyphs: string[] } {
@@ -56,4 +82,8 @@ export function renderSingleFrame(): string[] {
 
 export function getAnimationJson(): string {
   return exportAnimationJson(animatorStore.getState());
+}
+
+export function getStateSnapshot() {
+  return animatorStore.getState();
 }

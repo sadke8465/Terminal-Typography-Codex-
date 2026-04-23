@@ -35,6 +35,7 @@ const DEFAULT_SWIPE: SwipeParams = {
   direction: "left_to_right",
   action: "reveal",
   edgeDecay: true,
+  edgeDecayDistance: 3,
   speed: 2.5,
 };
 
@@ -146,6 +147,11 @@ export function sanitizePresetParams(preset: Preset, input: unknown): SheenParam
     action: asAction(params.action, DEFAULT_SWIPE.action),
     speed: clamp(toFiniteNumber(params.speed, DEFAULT_SWIPE.speed), 0.05, 20),
     edgeDecay: typeof params.edgeDecay === "boolean" ? params.edgeDecay : DEFAULT_SWIPE.edgeDecay,
+    edgeDecayDistance: clamp(
+      toFiniteNumber(params.edgeDecayDistance, DEFAULT_SWIPE.edgeDecayDistance ?? 3),
+      0.25,
+      30
+    ),
   };
 }
 

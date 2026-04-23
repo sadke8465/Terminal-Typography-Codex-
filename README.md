@@ -20,6 +20,7 @@ src/
 │   ├── wave.ts
 │   └── swipe.ts
 ├── state/
+│   ├── schema.ts
 │   ├── store.ts
 │   └── exporter.ts
 └── ui/
@@ -40,7 +41,9 @@ src/
 - **Animation modules:** independent math modules for `sheen`, `wave`, and `swipe`.
 - **Engine loop:** `engine.ts` uses front/back typed-array buffers and a 60fps-capable tick model.
 - **Boundary metadata:** `grid_mapper.ts` tracks shape bounds and character ownership for sturdier effects.
-- **Export handoff:** `state/exporter.ts` emits a lightweight `animation.json` for Go/Rust runtimes.
+- **Sheen highlighting:** optional ANSI truecolor highlight support (`highlightColor`) for sweep accents.
+- **Swipe edge degradation:** configurable `edgeDecayDistance` to control the decay band width.
+- **Export handoff:** `state/exporter.ts` emits a lightweight preset-specific `animation.json` for Go/Rust runtimes.
 
 ## Example exported JSON
 
@@ -55,6 +58,7 @@ src/
     "direction": "left_to_right",
     "action": "reveal",
     "edgeDecay": true,
+    "edgeDecayDistance": 3,
     "speed": 2.5
   }
 }
